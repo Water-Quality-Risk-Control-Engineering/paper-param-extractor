@@ -112,41 +112,38 @@ def classify_page(page_text, page_num, doc_page):
     return "text_page"
 ```
 
-### 2.3 Stage 1 — 选择性视觉精读
+### 2.3 Stage 1 — 选择性视觉精读（优先使用并行预处理器）
+
+**首选方案**：运行并行预处理器（推荐——12 分钟 → 1 分钟）
+
+```bash
+python3 scripts/preprocess.py <PDF路径> --api-key <百炼API_KEY>
+```
+
+预处理器自动完成：
+- Stage 0 文本锚定 + 智能分页
+- Stage 1 全部 data_page 并发视觉精读（17 线程）
+- 输出 `<PDF>_visual_cache.json` 缓存文件
+
+Agent 检测到缓存文件后直接加载，跳过 Stage 0 和 Stage 1。
+
+**回退方案**：Agent 手动逐页调用（仅当预处理器不可用时）
 
 **执行者**：Qwen3.6-plus（DashScope，多模态模式）
 
 **只处理 `data_page` 类型的页面**，其余页面跳过视觉精读。
 
-**输入**：单页PDF的高清截图（300 DPI，PNG格式）
+**输入**：单页PDF的截图（150 DPI，PNG格式，使用 PyMuPDF 内置渲染）
 
-**逐页视觉精读 Prompt**（含防幻觉约束）：
+**逐页视觉精读 Prompt**（含防幻觉约束）同上。
 
-```
-你是一个学术文献视觉读取专家。请仔细观察这一页PDF图片，将页面上所有可见信息转录为结构化Markdown。
-
-重要约束：
-- 只转录你在图片中实际看到的内容，不要添加任何你"知道"但图片中没有的信息
-- 如果某个数值看不清楚，用 [unclear] 标记，不要猜测
-- 不要从你的训练知识中补充任何数据
-
-转录要求：
-1. 正文文字完整转录，保留标题层级（#/##/###）
-2. 表格转为Markdown表格，确保表头与数据行严格对齐
-3. Figure/图表：描述图中内容，尽量读出具体数值（坐标轴数值、数据点、柱高、误差棒等）
-4. 图注（Caption）完整转录
-5. 公式转为LaTeX格式
-6. 脚注完整保留
-7. 在每个内容块前标注类型标签：[TEXT]、[TABLE]、[FIGURE]、[CAPTION]、[EQUATION]、[FOOTNOTE]
-
-输出纯Markdown，不要添加任何解释性文字。
-```
-
-**并发策略**：多个 data_page 可同时提交，互不依赖。
+**并发策略**：多个 data_page API 调用必须同时提交（并行），不得串行等待。
 
 ### 2.4 Stage 2 — 合并与约束提参
 
-**执行者**：Qwen3.6-plus（文本模式）
+**执行者**：Qwen3.6-plus（文本模式，**关闭 reasoning/thinking**）
+
+调用 API 时必须设置 `enable_thinking: false`，节省推理 token 和时间（5 分钟 → 1-2 分钟）。
 
 **合并策略**：
 - `text_page`：直接使用 PyMuPDF 提取的文本，在前面标注 `[Page N - text]`
@@ -282,31 +279,35 @@ def validate_value(field_name, value, full_text):
 ### 4.2 完整执行流程
 
 ```
+Step 0: 检查缓存
+  查找 <PDF>_visual_cache.json 缓存文件
+  若存在 → 直接加载锚点 + 视觉精读结果，跳至 Step 3
+
 Step 1: 解析用户约束
   理解用户定义的 key-value 结构和筛选条件
+  若无可用的并行预处理器，执行 Step 2a-2b
 
-Step 2: Stage 0 — 文本锚定
+Step 2a: Stage 0 — 文本锚定（本地 PyMuPDF, < 1s）
   PyMuPDF 提取全文文本 → 硬提取元数据锚点 → 智能分页
 
-Step 3: Stage 1 — 选择性视觉精读
-  仅对 data_page 执行 pdf2image + 多模态精读
-  text_page 直接使用 PyMuPDF 文本
-  skip_page 完全跳过
+Step 2b: Stage 1 — 并行视觉精读
+  对所有 data_page 同时发起 API 调用（17 线程并发）
+  耗时: max(单页延迟) ≈ 40-60s（vs 串行 12 min）
+  text_page 直接使用 PyMuPDF 文本，skip_page 完全跳过
 
-Step 4: Stage 2 — 合并与提参
+Step 3: Stage 2 — 合并与提参（关闭 thinking）
   文本层(text_page) + 视觉层(data_page) 按页码合并
   注入元数据锚点到提参 Prompt
-  Qwen3.6-plus 文本模式约束提取
+  Qwen3.6-plus 文本模式约束提取（enable_thinking: false, 1-2 min）
 
-Step 5: Stage 3 — 三级硬校验
-  Level 1: 元数据一致性（标题/DOI/作者 vs 锚点）
-  Level 2: 实体存在性（材料/污染物在原文中的出现频次）
-  Level 3: 数值回溯（关键数值在原文文本中可查）
+Step 4: Stage 3 — 三级硬校验（本地 Python, < 1s）
+  Level 1: 元数据一致性 / Level 2: 实体存在性 / Level 3: 数值回溯
   不通过的记录标记或删除
 
-Step 6: 输出综合 JSON
+Step 5: 输出综合 JSON
   附带校验结果、溯源和质量标记
 ```
+  总耗时: **5-7 分钟**（优化后） vs 24 分钟（优化前）
 
 ---
 
@@ -409,11 +410,13 @@ Paper_2.pdf → Stage 0-3 → JSON_2（含 validation_report）
 
 | 环节 | 优化后 | 优化前（纯视觉） | 改善 |
 |------|--------|-----------------|------|
-| Stage 0 文本锚定 | ~1s, ¥0 | 无 | 新增 |
-| Stage 1 视觉精读 | ~15-20页, ¥0.3-0.5 | 84页全读, ¥2-3 | -70% token |
-| Stage 2 提参 | ~10-15s, ¥0.1-0.2 | 同 | 不变 |
-| Stage 3 硬校验 | ~1s, ¥0 | 无 | 新增 |
-| **总计** | **~2-4 min, ¥0.5-0.8** | **~6-8 min, ¥2.5-3.5** | **-60% 成本** |
+| 环节 | 优化后（并行 + 关闭 thinking） | 优化前（串行视觉） | 改善 |
+|------|--------|-----------------|------|
+| Stage 0 文本锚定 | ~1s, ¥0 | ~1s, ¥0 | — |
+| Stage 1 视觉精读 | **~1 min（17 页并行）**, ¥0.3-0.5 | ~12 min（17 页串行）, ¥0.3-0.5 | **-90% 时间** |
+| Stage 2 提参 | **~1-2 min（disable_thinking）**, ¥0.1-0.2 | ~5 min（reasoning on）, ¥0.1-0.2 | **-60% 时间** |
+| Stage 3 硬校验 | ~1s, ¥0 | ~1s, ¥0 | — |
+| **总计** | **~5-7 min, ¥0.5-0.8** | **~24 min, ¥0.5-0.8** | **-70% 时间** |
 
 ---
 
