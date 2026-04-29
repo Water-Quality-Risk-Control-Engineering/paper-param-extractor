@@ -1,0 +1,33 @@
+# OpenClaw runtime
+.gateway/
+logs/
+*.log
+completions/
+canvas/
+devices/
+identity/
+cron/
+memory/
+sessions/
+exec-approvals.json
+update-check.json
+*.bak
+
+# Node / npm
+node_modules/
+package-lock.json
+
+# Python
+__pycache__/
+*.pyc
+.venv/
+venv/
+
+# Sensitive
+openclaw.json.local
+.env
+*.secret
+
+# OS
+.DS_Store
+Thumbs.db

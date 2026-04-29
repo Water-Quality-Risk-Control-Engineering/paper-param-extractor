@@ -1,0 +1,74 @@
+{
+  "meta": {
+    "lastTouchedVersion": "2026.3.2",
+    "lastTouchedAt": "2026-04-21T04:20:32.106Z"
+  },
+  "models": {
+    "mode": "merge",
+    "providers": {
+      "bailian": {
+        "baseUrl": "https://dashscope.aliyuncs.com/compatible-mode/v1",
+        "apiKey": "YOUR_DASHSCOPE_API_KEY",
+        "api": "openai-completions",
+        "models": [
+          {
+            "id": "qwen3.6-plus",
+            "name": "qwen3.6-plus",
+            "reasoning": true,
+            "input": ["text"],
+            "contextWindow": 1000000,
+            "maxTokens": 16384
+          },
+          {
+            "id": "qwen3.5-27b",
+            "name": "qwen3.5-27b",
+            "reasoning": true,
+            "input": ["text"],
+            "contextWindow": 131072,
+            "maxTokens": 16384
+          }
+        ]
+      }
+    }
+  },
+  "agents": {
+    "defaults": {
+      "model": "bailian/qwen3.6-plus",
+      "models": {
+        "bailian/qwen3.6-plus": { "alias": "qwen3.6-plus" },
+        "bailian/qwen3.5-27b": { "alias": "qwen3.5-27b" }
+      },
+      "timeoutSeconds": 300
+    },
+    "list": [
+      {
+        "id": "lit-extract",
+        "default": true,
+        "name": "lit-extract",
+        "workspace": "./workspace",
+        "agentDir": "./agents/lit-extract/agent",
+        "identity": {
+          "name": "LitExtract",
+          "theme": "学术文献结构化参数提取智能体",
+          "emoji": "📑"
+        }
+      }
+    ]
+  },
+  "commands": {
+    "native": "auto",
+    "nativeSkills": "auto",
+    "restart": true,
+    "ownerDisplay": "raw"
+  },
+  "gateway": {
+    "port": 18789,
+    "mode": "local",
+    "bind": "loopback",
+    "auth": {
+      "mode": "none"
+    }
+  },
+  "memory": {},
+  "skills": {}
+}

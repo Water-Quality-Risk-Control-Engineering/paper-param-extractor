@@ -1,0 +1,4 @@
+{
+  "model": "bailian/qwen3.6-plus",
+  "timeoutSeconds": 300
+}

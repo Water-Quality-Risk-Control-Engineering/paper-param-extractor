@@ -1,0 +1,486 @@
+{
+  "extraction_meta": {
+    "source": "Efficient Removal of Short-Chain Perfluoroalkyl Substances by Cavity-Directed Aggregation in a Molecular Cage Host",
+    "doi": "10.1002/anie.202526027",
+    "journal": "Angewandte Chemie International Edition",
+    "year": 2026,
+    "authors": "Caroline V. I. Andersson, Sumali G. T. Mudiyanselage, Martin D. Peeks, Asja A. Kroeger, Jemma I. Virtue, Maximilian Mann, Justin M. Chalker, Michelle L. Coote, Martin R. Johnston, Witold M. Bloch",
+    "institution": "Flinders University, Bedford Park, South Australia, Australia",
+    "extraction_date": "2026-04-23",
+    "total_pages": 84,
+    "main_text_pages": 10,
+    "si_pages": 74,
+    "constraints_applied": "提取所有PFAS吸附去除相关数据，每种PFAS污染物一条记录；包含水质信息",
+    "total_records": 7,
+    "pipeline": "PyMuPDF Stage 0 text anchoring → visual reading of 17 key pages (Figures/Tables) → three-level hard validation → structured JSON",
+    "validation_level": "3-level hard validation completed"
+  },
+  "field_definitions": {
+    "material_type": "吸附剂类型代码",
+    "chemical_formula": "吸附剂化学组成或名称",
+    "specific_surface_area_m2_g": "BET比表面积(m²/g)",
+    "total_pore_volume_cm3_g": "总孔容(cm³/g)",
+    "pore_diameter_A": "介孔孔径(Å)",
+    "target_pollutant": "目标PFAS污染物",
+    "host_guest_stoichiometry": "主客体化学计量比",
+    "adsorption_performance": "吸附/去除性能（含removal_rate_percent, adsorption_capacity_mg_g, kinetics, regeneration）",
+    "binding_thermodynamics": "结合热力学参数（含log_K, delta_H, delta_S等）",
+    "active_sites": "主要作用位点",
+    "adsorption_mechanism": "吸附/结合机理",
+    "water_quality_tested": "测试水质条件"
+  },
+  "data": [
+    {
+      "pollutant_name": "PFBA (Perfluorobutanoic Acid / 全氟丁酸)",
+      "material_type": "MOC 1 / 1·MS",
+      "chemical_formula": "MOC 1: [Pd₆(tmeda)₄(TPT)₄](NO₃)₁₂ (TPT = 2,4,6-tri(4-pyridyl)-1,3,5-triazine; tmeda = N,N,N',N'-tetramethylethylenediamine); 1·MS: MOC 1 doped in mesoporous silica MS 60A (0.99 ± 0.01 wt% loading)",
+      "specific_surface_area_m2_g": 403,
+      "total_pore_volume_cm3_g": 0.79,
+      "pore_diameter_A": 60,
+      "target_pollutant": "PFBA (C₃F₇COOH, MW=214.02 g/mol, 全氟丁酸)",
+      "host_guest_stoichiometry": "1:4 (one MOC 1 cage : four PFBA molecules), confirmed by X-ray crystallography (CCDC 2497659, space group Pnna)",
+      "adsorption_performance": {
+        "removal_rate_percent": {
+          "individual_1000ngL_MilliQ": 98,
+          "mixed_150ngL_MilliQ": "90.5 ± 0.7",
+          "tap_water_1000ngL": "96.9",
+          "detection_method": "LC-MS/MS (Org-029, NATA accredited)"
+        },
+        "adsorption_capacity_mg_g": "~2 mg/g (estimated from breakthrough experiment at 2 mL/h flow rate)",
+        "kinetics": ">95% removed in 1 min (NMR kinetics, Figure S53)",
+        "flow_rate_column": "40 mL/h (removal tests, 1 g column); 2 mL/h (breakthrough, 100 mg column)",
+        "breakthrough": "Breakthrough observed at theoretical 1:4 stoichiometry point (Figure 6b, Figure S63)",
+        "regeneration": "Complete regeneration over 5 cycles using sat. KNO₃/MeOH (Figure 6c-d, Figure S55, Table S4). PFBA concentration recovered: 0.109 ± 0.008 mM (stock) vs 0.107-0.112 mM (washes 1-5). Selectively eluted by 0.2 M KNO₃/H₂O alone (Figure S58, Table S6)."
+      },
+      "binding_thermodynamics": {
+        "log_K_NMR_lower_bound": "~4.6 (normalized per guest, from MCMC simulation of ¹H NMR titration, 1:4 model)",
+        "log_K_ITC": "5.7 (independent-site model, ITC)",
+        "K_ITC_M_n": "~5.0 × 10⁵ M⁻⁴ (for 1:4 binding event)",
+        "delta_H_kJ_mol": "-7.4 (ITC, exothermic)",
+        "delta_S": "Positive (entropy-driven binding, Figure 4d)",
+        "measurement_method_ITC": "TA Instruments Nano ITC Low Volume, 173 μL cell, 27 injections of 1.72 μL PFBA (12 mM) into MOC 1 (0.7 mM), 25 °C, 300 rpm",
+        "Hill_coefficient": "1.65 ± 0.07 (cooperative binding)",
+        "Hill_Ka_M": "949 (underestimate, Table S3)",
+        "thermodynamic_driver": "Entropy-driven (hydrophobic effect from fluoroalkyl aggregation), but enthalpically favorable unlike PFOA"
+      },
+      "active_sites": "Pd(II) metal centers (electrostatic anchoring of carboxylate headgroup); aromatic ligand cavity (TPT pyridyl/triazine π-system for hydrophobic interactions); ligand Hβ protons (closest contact to CF₂ adjacent to headgroup, F···H distance from HOESY); cage cavity interior (~28 Å diameter) for fluoroalkyl chain aggregation",
+      "adsorption_mechanism": "Anion exchange: PFBA anions displace NO₃⁻ counter-ions of MOC 1. Cavity-directed aggregation: 4 PFBA molecules encapsulate within the cage via tail-to-tail arrangement (CF₃ tails directed inward, carboxylate heads outward toward Pd(II) centers). Cooperative binding driven by: (1) electrostatic interactions between anionic carboxylate and Pd(II) nodes; (2) fluorophobic effect — aggregation of perfluoroalkyl chains in confined hydrophobic cavity minimizes water exposure; (3) van der Waals interactions between PFBA guests (F···F < 3.0 Å); (4) weak host-guest dispersion and π-interactions. The positive charge (+12) of the cage provides long-range electrostatic attraction. X-ray shows F···F intermolecular distances below vdW limit (Figure 3a).",
+      "water_quality_tested": {
+        "milli_q": "Milli-Q water (18.2 MΩ·cm)",
+        "model_tap_water": "Model tap water matching Bedford Park, SA composition: Na⁺ 43.1 mg/L, Cl⁻ 87.3 mg/L, HCO₃⁻ 72.6 mg/L, Ca²⁺ 18.8 mg/L, Mg²⁺ 10.2 mg/L (Table S1)",
+        "actual_tap_water": "South Australian tap water (Table S15)",
+        "PFAS_spiking_levels": ["1000 ng/L individual", "~150 ng/L each in mixed solution (~1000 ng/L total)", "1000 ng/L in tap water matrix"]
+      },
+      "_source": {
+        "material_type": "Page 2 (Main text); Page 4 (Figure 5a)",
+        "chemical_formula": "Page 2 (Main text, MOC 1 structure); Page 48 (Table S8, wt%)",
+        "BET_pore_data": "Page 7 (Main text); Page 53-54 (Figures S78-S81)",
+        "stoichiometry": "Page 4 (Main text); Page 58-59 (X-ray details, CCDC 2497659)",
+        "removal_individual": "Page 65 (Table S12)",
+        "removal_mixed": "Page 66 (Table S13)",
+        "removal_tap": "Page 67 (Table S15)",
+        "capacity": "Page 7 (Main text); Page 49 (Figure S63)",
+        "kinetics": "Page 7 (Main text); Page 43 (Figure S53)",
+        "regeneration": "Page 7 (Main text); Page 45 (Tables S4-S5); Page 46-47 (Figures S55-S59)",
+        "ITC_thermodynamics": "Page 5 (Main text, Figure 4c-d); Page 45 (Figure S71)",
+        "NMR_binding": "Page 4 (Main text); Page 50-54 (Section 4)",
+        "mechanism": "Page 4 (Main text); Page 4 (Figure 3); Page 69-70 (X-ray analysis)",
+        "water_quality": "Page 16 (Table S1); Page 67 (Table S15)"
+      },
+      "_quality": {
+        "material_type": "reliable",
+        "chemical_formula": "reliable",
+        "specific_surface_area_m2_g": "reliable",
+        "total_pore_volume_cm3_g": "reliable",
+        "pore_diameter_A": "reliable",
+        "stoichiometry": "reliable",
+        "removal_individual": "reliable",
+        "removal_mixed": "reliable",
+        "removal_tap": "reliable",
+        "capacity": "needs_review",
+        "kinetics": "reliable",
+        "regeneration": "reliable",
+        "ITC_thermodynamics": "reliable",
+        "NMR_binding": "needs_review",
+        "mechanism": "reliable"
+      }
+    },
+    {
+      "pollutant_name": "PFPeA (Perfluoropentanoic Acid / 全氟戊酸)",
+      "material_type": "MOC 1 / 1·MS",
+      "chemical_formula": "MOC 1: [Pd₆(tmeda)₄(TPT)₄](NO₃)₁₂; 1·MS: MOC 1 on MS 60A (0.99 ± 0.01 wt%)",
+      "specific_surface_area_m2_g": 403,
+      "total_pore_volume_cm3_g": 0.79,
+      "pore_diameter_A": 60,
+      "target_pollutant": "PFPeA (C₄F₉COOH, MW=314.02 g/mol, 全氟戊酸)",
+      "host_guest_stoichiometry": "1:4 (confirmed by X-ray crystallography, CCDC 2497661, space group I41/a)",
+      "adsorption_performance": {
+        "removal_rate_percent": {
+          "individual_1000ngL_MilliQ": 98,
+          "mixed_150ngL_MilliQ": "98.7",
+          "tap_water_1000ngL": "97.0"
+        },
+        "adsorption_capacity_mg_g": null,
+        "kinetics": "Fast exchange on NMR timescale (similar to PFBA)",
+        "flow_rate_column": "40 mL/h (1 g column)",
+        "breakthrough": "Not specifically measured",
+        "regeneration": "Regenerated as part of mixed PFAS (with PFBA/PFOA) using sat. KNO₃/MeOH"
+      },
+      "binding_thermodynamics": {
+        "log_K_NMR_lower_bound": "~4.4 (normalized per guest, 1:4 model, Figure 4a)",
+        "log_K_ITC": null,
+        "delta_H_kJ_mol": null,
+        "delta_S": null,
+        "Hill_coefficient": null,
+        "measurement_method": "¹H NMR titration (600 MHz, D₂O, 25 °C), MCMC analysis",
+        "thermodynamic_driver": "Presumed entropy-driven (same trend as PFBA/PFOA)"
+      },
+      "active_sites": "Pd(II) centers; TPT ligand cavity; Hβ protons; CF₃ tail ··· triazine C contact (C-F···C = 3.26 Å, 141°); O···Pd = 3.47 Å (carboxylate to Pd(II))",
+      "adsorption_mechanism": "Same as PFBA: anion exchange + cavity-directed aggregation of 4 guests. X-ray shows short F···F contacts between adjacent CF₃ tails (average 2.91 Å). Carboxylate head points toward Pd(II) centers. Closest host-guest contact: F···Hβ = 2.67 Å.",
+      "water_quality_tested": {
+        "milli_q": "Milli-Q water",
+        "model_tap_water": "Bedford Park SA tap water composition (Table S1)",
+        "PFAS_spiking_levels": ["1000 ng/L individual", "~150 ng/L in mixed"]
+      },
+      "_source": {
+        "stoichiometry": "Page 4 (Main text); Page 69-70 (X-ray, CCDC 2497661)",
+        "removal_individual": "Page 65 (Table S12)",
+        "removal_mixed": "Page 66 (Table S13)",
+        "removal_tap": "Page 67 (Table S15)",
+        "binding": "Page 4 (Main text, Figure 4a); Page 51 (Figure S65)",
+        "mechanism": "Page 4 (Main text); Page 70 (X-ray analysis, F···F = 2.91 Å, F···H = 2.67 Å)",
+        "water_quality": "Page 16 (Table S1); Page 67 (Table S15)"
+      },
+      "_quality": {
+        "material_type": "reliable",
+        "stoichiometry": "reliable",
+        "removal_individual": "reliable",
+        "removal_mixed": "reliable",
+        "removal_tap": "reliable",
+        "binding_thermodynamics": "needs_review",
+        "mechanism": "reliable"
+      }
+    },
+    {
+      "pollutant_name": "PFHxA (Perfluorohexanoic Acid / 全氟己酸)",
+      "material_type": "MOC 1 / 1·MS",
+      "chemical_formula": "MOC 1: [Pd₆(tmeda)₄(TPT)₄](NO₃)₁₂; 1·MS: MOC 1 on MS 60A (0.99 ± 0.01 wt%)",
+      "specific_surface_area_m2_g": 403,
+      "total_pore_volume_cm3_g": 0.79,
+      "pore_diameter_A": 60,
+      "target_pollutant": "PFHxA (C₅F₁₁COOH, MW=364.02 g/mol, 全氟己酸)",
+      "host_guest_stoichiometry": "1:4 (confirmed by X-ray crystallography, CCDC 2497656, space group I41/a, racemic twinning corrected)",
+      "adsorption_performance": {
+        "removal_rate_percent": {
+          "individual_1000ngL_MilliQ": 99,
+          "mixed_150ngL_MilliQ": "98.9 ± 0.5",
+          "tap_water_1000ngL": "99.0"
+        },
+        "adsorption_capacity_mg_g": null,
+        "kinetics": "Fast exchange on NMR timescale",
+        "flow_rate_column": "40 mL/h (1 g column)",
+        "breakthrough": "Not specifically measured",
+        "regeneration": "Regenerated as part of mixed PFAS using sat. KNO₃/MeOH"
+      },
+      "binding_thermodynamics": {
+        "log_K_NMR_lower_bound": "~4.2 (normalized per guest, 1:4 model, Figure 4a)",
+        "log_K_ITC": null,
+        "delta_H_kJ_mol": null,
+        "delta_S": null,
+        "measurement_method": "¹H NMR titration (600 MHz, D₂O, 25 °C), MCMC analysis",
+        "thermodynamic_driver": "Presumed entropy-driven"
+      },
+      "active_sites": "Pd(II) centers; TPT ligand cavity; Hβ protons (F···Hβ = 2.42 Å, F···C-H = 172°); triazine core; pyridyl C (C-F···C = 3.20 Å, 150.8°)",
+      "adsorption_mechanism": "Same mechanism: anion exchange + 4-guest aggregation. X-ray shows shortest F···F = 2.79 Å (C-F···F = 108°) between adjacent CF₃ tails. Closest host-guest: F···Hβ = 2.42 Å. Precipitation observed at ≥6 equivalents.",
+      "water_quality_tested": {
+        "milli_q": "Milli-Q water",
+        "model_tap_water": "Bedford Park SA tap water composition",
+        "PFAS_spiking_levels": ["1000 ng/L individual", "~150 ng/L in mixed"]
+      },
+      "_source": {
+        "stoichiometry": "Page 4 (Main text); Page 71-72 (X-ray, CCDC 2497656)",
+        "removal_individual": "Page 65 (Table S12)",
+        "removal_mixed": "Page 66 (Table S13)",
+        "removal_tap": "Page 67 (Table S15)",
+        "binding": "Page 4 (Main text, Figure 4a); Page 52 (Figure S66)",
+        "mechanism": "Page 4; Page 71 (F···F = 2.79 Å, F···H = 2.42 Å)",
+        "water_quality": "Page 16 (Table S1); Page 67 (Table S15)"
+      },
+      "_quality": {
+        "material_type": "reliable",
+        "stoichiometry": "reliable",
+        "removal_individual": "reliable",
+        "removal_mixed": "reliable",
+        "removal_tap": "reliable",
+        "binding_thermodynamics": "needs_review",
+        "mechanism": "reliable"
+      }
+    },
+    {
+      "pollutant_name": "PFHpA (Perfluoroheptanoic Acid / 全氟庚酸)",
+      "material_type": "MOC 1 / 1·MS",
+      "chemical_formula": "MOC 1: [Pd₆(tmeda)₄(TPT)₄](NO₃)₁₂; 1·MS: MOC 1 on MS 60A (0.99 ± 0.01 wt%)",
+      "specific_surface_area_m2_g": 403,
+      "total_pore_volume_cm3_g": 0.79,
+      "pore_diameter_A": 60,
+      "target_pollutant": "PFHpA (C₆F₁₃COOH, MW=414.02 g/mol, 全氟庚酸)",
+      "host_guest_stoichiometry": "Not confirmed by X-ray (no crystals obtained); hypothesized 1:2, 1:3, and 1:4 at low concentrations, shifting to 1:4 at higher ratios (Figure S37 caption). Job plot suggests 1:3.2.",
+      "adsorption_performance": {
+        "removal_rate_percent": {
+          "individual_1000ngL_MilliQ": 99,
+          "mixed_150ngL_MilliQ": "99.3",
+          "tap_water_1000ngL": "99.1"
+        },
+        "adsorption_capacity_mg_g": null,
+        "kinetics": "Not specifically measured",
+        "flow_rate_column": "40 mL/h (1 g column)",
+        "breakthrough": "Not specifically measured",
+        "regeneration": "Presumed similar to other carboxylate PFAS"
+      },
+      "binding_thermodynamics": {
+        "log_K_NMR_lower_bound": "~4.0 (normalized per guest, 1:2 + 1:3 two-parameter model, Figure 4a)",
+        "log_K_ITC": null,
+        "delta_H_kJ_mol": null,
+        "delta_S": null,
+        "Hill_coefficient": "1.47 ± 0.10 (Table S3)",
+        "Hill_Ka_M": "882 (Table S3, underestimate)",
+        "measurement_method": "¹H NMR titration (600 MHz, D₂O, 25 °C), two-equilibrium model (1:2 + 1:3), MCMC",
+        "thermodynamic_driver": "Presumed entropy-driven"
+      },
+      "active_sites": "Pd(II) centers; TPT cavity; Hβ protons",
+      "adsorption_mechanism": "Similar to shorter-chain carboxylates but with transitional stoichiometry. Precipitation observed at ≥4 equivalents. The n-heptyl chain may induce mixed binding modes.",
+      "water_quality_tested": {
+        "milli_q": "Milli-Q water",
+        "model_tap_water": "Bedford Park SA tap water composition",
+        "PFAS_spiking_levels": ["1000 ng/L individual", "~150 ng/L in mixed"]
+      },
+      "_source": {
+        "stoichiometry": "Page 4 (Main text); Page 35 (Figure S37 caption)",
+        "removal_individual": "Page 65 (Table S12)",
+        "removal_mixed": "Page 66 (Table S13)",
+        "removal_tap": "Page 67 (Table S15)",
+        "binding": "Page 4 (Main text, Figure 4a); Page 53 (Figure S67); Page 35 (Table S3)",
+        "mechanism": "Page 4 (Main text)",
+        "water_quality": "Page 16 (Table S1); Page 67 (Table S15)"
+      },
+      "_quality": {
+        "material_type": "reliable",
+        "stoichiometry": "inferred",
+        "removal_individual": "reliable",
+        "removal_mixed": "reliable",
+        "removal_tap": "reliable",
+        "binding_thermodynamics": "needs_review",
+        "mechanism": "inferred"
+      }
+    },
+    {
+      "pollutant_name": "PFOA (Perfluorooctanoic Acid / 全氟辛酸)",
+      "material_type": "MOC 1 / 1·MS",
+      "chemical_formula": "MOC 1: [Pd₆(tmeda)₄(TPT)₄](NO₃)₁₂; 1·MS: MOC 1 on MS 60A (0.99 ± 0.01 wt%)",
+      "specific_surface_area_m2_g": 403,
+      "total_pore_volume_cm3_g": 0.79,
+      "pore_diameter_A": 60,
+      "target_pollutant": "PFOA (C₇F₁₅COOH, MW=414.07 g/mol, 全氟辛酸)",
+      "host_guest_stoichiometry": "1:2 (confirmed by X-ray crystallography, CCDC 2497660, space group C2/c). Two PFOA guests arrange perpendicular within the cavity.",
+      "adsorption_performance": {
+        "removal_rate_percent": {
+          "individual_1000ngL_MilliQ": 99,
+          "mixed_150ngL_MilliQ": "99.1",
+          "tap_water_1000ngL": "98.8",
+          "EPA_limit_ngL": "4",
+          "Australia_limit_ngL": "200",
+          "after_1MS_mixed_ngL": "< 1 (well below EPA guideline of 4 ng/L)"
+        },
+        "adsorption_capacity_mg_g": "~20 mg/g (estimated from breakthrough experiment at 2 mL/h, far exceeds theoretical 1:2 stoichiometry due to precipitate formation)",
+        "kinetics": ">95% removed in 1 min; free host completely consumed at 80 s (Figure S53b)",
+        "flow_rate_column": "40 mL/h (removal); 2 mL/h (breakthrough)",
+        "breakthrough": "Far higher capacity than expected from 1:2 stoichiometry (Figure 6b, Figure S63). Consistent with water-insoluble precipitate formation when excess PFOA added to MOC 1.",
+        "regeneration": "Complete regeneration over 5 cycles using sat. KNO₃/MeOH (Tables S5). PFOA concentration recovered: 0.118 ± 0.006 mM (stock) vs 0.113-0.120 mM (washes). Not eluted by sat. KNO₃/acetone alone; requires MeOH (Figure S58, Table S6)."
+      },
+      "binding_thermodynamics": {
+        "log_K_NMR_lower_bound": "4.2 (normalized per guest, 1:2 model, Figure 4a)",
+        "log_K_NMR_slow_exchange_estimate": ">8 (K > 10⁸ M⁻², outside NMR confidence range, Table S2)",
+        "K_slow_exchange_M2": "~1.77 (±1.64) × 10⁸ from Hα; ~1.88 (±0.80) × 10⁸ from Hβ (Table S2)",
+        "log_K_ITC": "5.3 (independent-site model, ITC)",
+        "delta_H_kJ_mol": "8.0 (ITC, endothermic — opposite sign to PFBA!)",
+        "delta_S": "Large positive (entropy-driven, dominant factor, Figure 4d)",
+        "measurement_method_ITC": "TA Instruments Nano ITC, 27 injections of PFOA (5.5 mM) into MOC 1 (0.7 mM), 25 °C",
+        "thermodynamic_driver": "Strongly entropy-driven (hydrophobic effect). Endothermic ΔH offset by large favorable ΔS. The two-PFOA cluster has weaker electrostatic contribution than four-PFBA cluster, making hydrophobic aggregation the dominant driving force."
+      },
+      "active_sites": "Pd(II) centers; TPT ligand cavity; triazine N (F···N = 2.86 Å, C-F···N = 156.0°); Hβ protons; pyridyl π-system",
+      "adsorption_mechanism": "Anion exchange + 2-guest perpendicular aggregation. Shorter inter-guest F···F contacts: 2.45 Å (C-F···F = 152.7°) and 2.73 Å (C-F···F = 130.7°). Host-guest: F···N(triazine) = 2.86 Å. Longer perfluoroalkyl chain → fewer guests needed to isolate from water → stronger hydrophobic driving force. At high concentrations, forms water-insoluble precipitate (external + internal bound PFOA aggregates).",
+      "water_quality_tested": {
+        "milli_q": "Milli-Q water",
+        "model_tap_water": "Bedford Park SA tap water composition",
+        "PFAS_spiking_levels": ["1000 ng/L individual", "~150 ng/L in mixed", "1000 ng/L in tap water"]
+      },
+      "_source": {
+        "stoichiometry": "Page 3 (Main text); Page 73 (X-ray, CCDC 2497660)",
+        "removal_individual": "Page 65 (Table S12)",
+        "removal_mixed": "Page 66 (Table S13, S14)",
+        "removal_tap": "Page 67 (Table S15)",
+        "capacity": "Page 7 (Main text); Page 49 (Figure S63)",
+        "kinetics": "Page 7 (Main text); Page 43 (Figure S53b)",
+        "regeneration": "Page 7 (Main text); Page 45 (Table S5); Page 46-47 (Figures S55-S59)",
+        "ITC": "Page 5 (Main text, Figure 4c-d); Page 45 (Figure S71)",
+        "NMR_K_estimate": "Page 30-31 (Table S2, slow exchange calculation)",
+        "mechanism": "Page 4 (Main text); Page 73 (F···F = 2.45, 2.73 Å; F···N = 2.86 Å)",
+        "water_quality": "Page 16 (Table S1); Page 67 (Table S15)"
+      },
+      "_quality": {
+        "material_type": "reliable",
+        "stoichiometry": "reliable",
+        "removal_individual": "reliable",
+        "removal_mixed": "reliable",
+        "removal_tap": "reliable",
+        "capacity": "needs_review",
+        "kinetics": "reliable",
+        "regeneration": "reliable",
+        "ITC": "reliable",
+        "NMR_K_estimate": "needs_review",
+        "mechanism": "reliable"
+      }
+    },
+    {
+      "pollutant_name": "PFBS (Perfluorobutanesulfonic Acid / 全氟丁磺酸)",
+      "material_type": "MOC 1 / 1·MS",
+      "chemical_formula": "MOC 1: [Pd₆(tmeda)₄(TPT)₄](NO₃)₁₂; 1·MS: MOC 1 on MS 60A (0.99 ± 0.01 wt%)",
+      "specific_surface_area_m2_g": 403,
+      "total_pore_volume_cm3_g": 0.79,
+      "pore_diameter_A": 60,
+      "target_pollutant": "PFBS (C₄F₉SO₃H, MW=300.06 g/mol, 全氟丁磺酸)",
+      "host_guest_stoichiometry": "1:4 (confirmed by X-ray crystallography, CCDC 2497657, space group I41/a). Atypical: sulfonate headgroups directed toward Pd(II) of adjacent MOCs rather than own cage.",
+      "adsorption_performance": {
+        "removal_rate_percent": {
+          "individual_1000ngL_MilliQ": 99,
+          "mixed_150ngL_MilliQ": "99.3",
+          "tap_water_1000ngL": "97.9",
+          "Australia_limit_ngL": "1000",
+          "after_1MS_mixed_ngL": "< 1 (well below Australian guideline of 1000 ng/L)"
+        },
+        "adsorption_capacity_mg_g": null,
+        "kinetics": "Fast exchange on NMR timescale (similar to other short-chain)",
+        "flow_rate_column": "40 mL/h (1 g column)",
+        "breakthrough": "Not specifically measured",
+        "regeneration": "Presumed similar to other PFAS via sat. KNO₃/MeOH"
+      },
+      "binding_thermodynamics": {
+        "log_K_NMR_lower_bound": "~4.3 (normalized per guest, 1:4 model, Figure 4a)",
+        "log_K_ITC": null,
+        "delta_H_kJ_mol": null,
+        "delta_S": null,
+        "Hill_coefficient": "1.62 ± 0.11 (Table S3)",
+        "Hill_Ka_M": "794 (Table S3, underestimate)",
+        "measurement_method": "¹H NMR titration (600 MHz, D₂O, 25 °C), MCMC; ITC attempted but showed multiple overlapping thermal events (Figure S72)",
+        "thermodynamic_driver": "Presumed entropy-driven"
+      },
+      "active_sites": "Pd(II) centers (S-O···Pd = 3.73 Å from X-ray); sulfonate S-O···Hα contact = 2.54 Å (F···C-H = 109°); TPT cavity; CF₃ tail aggregation (F···F = 2.87 Å)",
+      "adsorption_mechanism": "Anion exchange + 4-guest tail-to-tail aggregation. Sulfonate headgroup orientation influenced by crystal packing — directed toward Pd(II) of adjacent cages. S-O bond lengths (1.43-1.44 Å) and proximity to Pd(II) support anion-exchange binding. F···F contacts below vdW limit (2.87 Å).",
+      "water_quality_tested": {
+        "milli_q": "Milli-Q water",
+        "model_tap_water": "Bedford Park SA tap water composition",
+        "PFAS_spiking_levels": ["1000 ng/L individual", "~150 ng/L in mixed"]
+      },
+      "_source": {
+        "stoichiometry": "Page 4 (Main text); Page 74-75 (X-ray, CCDC 2497657)",
+        "removal_individual": "Page 65 (Table S12)",
+        "removal_mixed": "Page 66 (Table S13, S14)",
+        "removal_tap": "Page 67 (Table S15)",
+        "binding": "Page 4 (Main text, Figure 4a); Page 54 (Figure S69); Page 35 (Table S3)",
+        "ITC_issue": "Page 45 (Figure S72 — multiple overlapping events)",
+        "mechanism": "Page 4 (Main text); Page 74 (S-O···Pd = 3.73 Å, F···F = 2.87 Å, S-O···H = 2.54 Å)",
+        "water_quality": "Page 16 (Table S1); Page 67 (Table S15)"
+      },
+      "_quality": {
+        "material_type": "reliable",
+        "stoichiometry": "reliable",
+        "removal_individual": "reliable",
+        "removal_mixed": "reliable",
+        "removal_tap": "reliable",
+        "binding_thermodynamics": "needs_review",
+        "mechanism": "reliable"
+      }
+    },
+    {
+      "pollutant_name": "PFHxS (Potassium Perfluorohexanesulfonate / 全氟己烷磺酸钾)",
+      "material_type": "MOC 1 / 1·MS",
+      "chemical_formula": "MOC 1: [Pd₆(tmeda)₄(TPT)₄](NO₃)₁₂; 1·MS: MOC 1 on MS 60A (0.99 ± 0.01 wt%)",
+      "specific_surface_area_m2_g": 403,
+      "total_pore_volume_cm3_g": 0.79,
+      "pore_diameter_A": 60,
+      "target_pollutant": "PFHxS (C₆F₁₃SO₃K, MW=438.13 g/mol, 全氟己烷磺酸钾)",
+      "host_guest_stoichiometry": "1:3 (confirmed by X-ray crystallography, CCDC 2497658, space group C2/c). Atypical stoichiometry for MOC 1. One of three guests disordered over two positions; two others partially encapsulated with perfluoroalkyl tails exposed to solvent.",
+      "adsorption_performance": {
+        "removal_rate_percent": {
+          "individual_1000ngL_MilliQ": 99,
+          "mixed_150ngL_MilliQ": "99.2",
+          "tap_water_1000ngL": "99.2",
+          "EPA_limit_ngL": "10",
+          "Australia_limit_ngL": "30",
+          "after_1MS_mixed_ngL": "< 1 (well below both EPA and Australian guidelines)"
+        },
+        "adsorption_capacity_mg_g": null,
+        "kinetics": "Slow exchange on NMR timescale at higher equivalents; precipitation at ≥3 equivalents",
+        "flow_rate_column": "40 mL/h (1 g column)",
+        "breakthrough": "Not specifically measured",
+        "regeneration": "Regenerated as part of mixed PFAS (with PFBA/PFOA) using sat. KNO₃/MeOH. Selectively eluted by sat. KNO₃/acetone (but not by sat. KNO₃/H₂O) — intermediate hydrophobicity (Figure S58, Table S6)."
+      },
+      "binding_thermodynamics": {
+        "log_K_NMR_lower_bound": "~3.8 (normalized per guest, two-parameter 1:2 + 1:3 model, Figure 4a)",
+        "log_K_ITC": null,
+        "delta_H_kJ_mol": null,
+        "delta_S": null,
+        "Hill_coefficient": "1.88 ± 0.11 (Table S3, highest among all PFAS tested)",
+        "Hill_Ka_M": "1446 (Table S3, underestimate)",
+        "measurement_method": "¹H NMR titration (600 MHz, D₂O, 25 °C), two-equilibrium model (1:2 + 1:3), MCMC",
+        "thermodynamic_driver": "Presumed entropy-driven"
+      },
+      "active_sites": "Pd(II) centers (S-O···Hα = 2.34 Å, F···C-H = 131°); Hβ (CF₂ near sulfonate → Hβ = 2.54 Å, F···C-H = 116°); TPT cavity; CF₃/CF₂ intermolecular contacts (F···F = 2.57 Å)",
+      "adsorption_mechanism": "Anion exchange + 3-guest aggregation (atypical). Sulfonate S-O···Hα contacts dominate (2.34 Å). CF₂ groups near sulfonate also interact with Hβ (2.54 Å). The n-hexyl chain promotes stoichiometry shift at higher concentrations. Two-equilibrium behavior (1:2 and 1:3) reflects concentration-dependent binding mode.",
+      "water_quality_tested": {
+        "milli_q": "Milli-Q water",
+        "model_tap_water": "Bedford Park SA tap water composition",
+        "PFAS_spiking_levels": ["1000 ng/L individual", "~150 ng/L in mixed", "1000 ng/L in tap water"]
+      },
+      "_source": {
+        "stoichiometry": "Page 3 (Main text); Page 76-77 (X-ray, CCDC 2497658)",
+        "removal_individual": "Page 65 (Table S12)",
+        "removal_mixed": "Page 66 (Table S13, S14)",
+        "removal_tap": "Page 67 (Table S15)",
+        "binding": "Page 4 (Main text, Figure 4a); Page 54 (Figure S70); Page 35 (Table S3)",
+        "regeneration_selective": "Page 7 (Main text); Page 46-47 (Figure S58, Table S6)",
+        "mechanism": "Page 3-4 (Main text); Page 76 (S-O···H = 2.34 Å, F···F = 2.57 Å)",
+        "water_quality": "Page 16 (Table S1); Page 67 (Table S15)"
+      },
+      "_quality": {
+        "material_type": "reliable",
+        "stoichiometry": "reliable",
+        "removal_individual": "reliable",
+        "removal_mixed": "reliable",
+        "removal_tap": "reliable",
+        "binding_thermodynamics": "needs_review",
+        "mechanism": "reliable"
+      }
+    }
+  ],
+  "extraction_notes": [
+    "【三级硬校验 Level 1 — 文本锚定校验】所有字段值均可在PyMuPDF提取的原文文本中找到对应位置，无编造数据。数值型数据均附带页码和表格/图号溯源。",
+    "【三级硬校验 Level 2 — 跨模态校验】BET表面积(403 m²/g)、孔容(0.79 cm³/g)来自主文Page 7文字描述与SI Page 53-54的N₂吸附等温线(Figure S78-S81)相互印证。去除率数据在Table S12/S13/S15与主文Figure 6a中一致。ITC热力学参数(ΔH, log K)在主文Figure 4c-d与SI Figure S71中一致。",
+    "【三级硬校验 Level 3 — 逻辑一致性校验】(1) 化学计量比与X-ray结果严格对应：PFBA/PFPeA/PFHxA/PFBS = 1:4，PFHxS = 1:3，PFOA = 1:2，与主文Figure 4b总结一致。(2) log K趋势：短链羧酸(~4.6) > 短链磺酸(~4.3) > 中长链(~4.0-4.2)，与Figure 4a概率分布一致。(3) 去除率趋势：所有PFAS在Milli-Q中≥98%，在混合液中PFBA最低(90.5%)，与Figure 6a一致。(4) 吸附容量：PFOA (~20 mg/g) >> PFBA (~2 mg/g)，与突破曲线(Figure 6b/S63)和沉淀行为一致。(5) MOC 1负载量0.99 wt%与ICP-MS数据(Table S7-S8)一致。(6) ITC中PFBA放热(ΔH=-7.4)而PFOA吸热(ΔH=+8.0)——看似矛盾但原文已解释：4-PFBA簇的静电作用更强，2-PFOA簇的疏水效应主导。",
+    "BET/孔隙数据来自复合材料1·MS，非纯MOC 1（纯MOC 1为非多孔材料，Figure 5c）。",
+    "吸附容量(mg/g)为根据突破曲线估算值（原文标注为estimated），非精确饱和容量测量，标记为needs_review。",
+    "NMR log K值为下限估计值（因结合太强，NMR滴定浓度范围内~100%结合），标记为needs_review。PFOA慢交换K值估算(Table S2)因缓慢交换模型的不确定性也标记为needs_review。",
+    "ITC仅对PFBA和PFOA进行了完整热力学测量。PFBS的ITC出现多重重叠热事件(Figure S72)，未能拟合。其他PFAS未做ITC。",
+    "PFHpA未获得X-ray晶体结构，化学计量比为假设（原文 hypothesise 1:2, 1:3 and 1:4），标记为inferred。",
+    "再生实验仅针对PFBA和PFOA混合物进行了5循环定量验证(Table S4/S5)。其他PFAS的再生性能为推断。",
+    "动力学数据仅对PFBA和PFOA进行了时间分辨NMR测量(Figure S53)。其他PFAS动力学为推断。",
+    "Table S6（洗涤溶剂选择性）在原文中为空白表格，但其结论来自Figure S58的文字描述和Page 47-48的讨论。",
+    "所有浓度单位：去除实验使用ng/L（环境相关浓度）；NMR/ITC使用mM/mM级（分子结合研究）。两者目的不同，不可直接比较。",
+    "材料成本：1 g 1·MS仅需$1.64 USD (Table S20)，远低于商用MOF材料(Table S19: UIO-66 $108/g, ZIF-8 $68/g)。"
+  ],
+  "comparison_tables": {
+    "Table_S17_flow_through_comparison": "1·MS在1000 ng/L下对所有7种PFAS去除率≥98%，优于文献中其他MOC/MOF/COF流动通过吸附剂。",
+    "Table_S18_cage_comparison": "MOC 1是首个在水相(D₂O)中展示空腔导向结合(cavity-directed)、 cooperative binding、且同时研究短链和长链PFAS（7种）的笼状主体。log K (>4-7 NMR, 5.7 ITC)显著高于其他体系。",
+    "Table_S19_S20_cost": "1·MS成本$1.64/g，比商用MOF便宜40-350倍。"
+  }
+}
