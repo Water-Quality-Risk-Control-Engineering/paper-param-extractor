@@ -1,6 +1,6 @@
 ---
 name: literature-data-extraction
-description: 文本锚定+视觉增强+硬校验混合提参：PyMuPDF文本层锚定元数据与校验基准，仅对图表页做多模态视觉精读，三级硬校验消除幻觉，输出带溯源的结构化JSON。
+description: 文本锚定+视觉增强+硬校验混合提参：PyMuPDF文本层锚定元数据与校验基准，仅对图表页做多模态视觉精读，三级硬校验消除幻觉，输出带溯源的结构化JSON。内置 ADRMATS 评估智能体测试集构建 Profile（§11），支持 visible_input/hidden_oracle_label 三段式输出。
 metadata:
   openclaw:
     emoji: "📑"
@@ -471,4 +471,237 @@ Paper_2.pdf → Stage 0-3 → JSON_2（含 validation_report）
 |-------|---------|
 | water_data_analysis | 本 Skill 提取的文献参数可作为水质分析的参考输入 |
 | 未来扩展 | 提取的 JSON 可直接供下游技能消费（材料筛选、对比分析、知识图谱构建等） |
+
+---
+
+## 11. 业务 Profile：ADRMATS 评估智能体测试集构建
+
+### 11.1 Profile 定位
+
+本 Profile 用于生成 **ADRMATS 评估智能体（Evaluation Agent）** 的性能测试集。测试对象仅限评估智能体本身（不含约束识别智能体、设计智能体、提取模块）。测试输入必须对齐评估智能体在主链路中实际接收的两类结构化信息：
+
+```
+visible_input = constraint_context + merged_proposals
+hidden_oracle_label（不得随 visible_input 传入）
+```
+
+**激活条件**（满足任一）：
+- 用户明确提到「ADRMATS 评估智能体测试集」「评估智能体性能测试」「排序准确率测试集」
+- 用户要求输出包含 `visible_input` / `hidden_oracle_label` / `source_trace` 的三段式记录
+- 用户要求提取结果同时包含 `constraint_context` 与 `merged_proposals`
+
+激活后，本 Profile 作为 §4 Stage 2 提参 Prompt 的业务约束层注入，Stage 0/1/3 的文本锚定、视觉增强与三级硬校验机制全部保留。
+
+### 11.2 最小记录粒度与拆分规则
+
+单条记录以 **一个材料 × 一个污染物 × 一个水质场景 × 一个实验类型 × 一组独立实验条件** 为最小单元。以下场景强制拆分为多条 records：
+
+1. 文献中存在多个材料 → 每种材料一条
+2. 单一材料对应多种水质场景（超纯水 / 自来水 / 地下水 / 模拟废水 / 真实废水）→ 每种水质一条
+3. 单一材料对应多种污染物（如 PFBA / PFOA / PFOS / OTC）→ 每种污染物一条
+4. 单一材料在不同 pH / 盐度 / 硬度 / 共存离子 / 有机物条件下测试 → 按独立实验条件拆分
+5. 批量吸附实验与柱实验 → 分开记录（工程意义不同）
+
+**来源标记**（写入 `source_trace.record_origin`）：
+
+| 取值 | 适用场景 |
+|------|----------|
+| `this_work` | 本文实验获得的数据 |
+| `control` | 本文设置的对照 / 未改性 / 商业基准材料 |
+| `literature_comparison` | 本文引用自其他文献的对比表数据 |
+| `synthetic_noise` | 人工构造的错配 / 单位错置 / 矛盾样本 |
+
+### 11.3 字段提取要求
+
+**A. 构造 `constraint_context` 所需文献信息**
+
+- 水质：`water_source_type` / `real_or_synthetic_water` / `pH` / `temperature` / `salinity_or_ionic_strength` / `hardness` / `major_ions` / `organic_load` / `coexisting_species` / `microbial_activity` / `special_water_characteristics`
+- 污染物：`pollutant_name` / `CAS` / `molecular_formula` / `molecular_weight` / `pollutant_class` / `initial_concentration` / `pKa` / `charge_state_at_test_pH` / `molecular_size_or_chain_length` / `hydrophobicity` / `functional_groups` / `special_properties`
+- `evaluation_weights` 与 `design_guidelines` 由下游脚本基于以上水质/污染物信息生成，本阶段可置 null；文献提参阶段仅需保证水质与污染物信息足以支撑权重生成
+
+**B. 构造 `merged_proposals` 所需文献信息**
+
+| 目标字段 | 文献对应内容 |
+|----------|-------------|
+| `material_type` | carbon / resin / MOF / COF / polymer / cage / xerogel / hybrid |
+| `chemical_formula` | 化学式、材料缩写、复合材料主组成 |
+| `element_composition` | 元素组成、掺杂元素、金属比例、XPS/EDS 结果 |
+| `active_sites` | 胺基 / 季铵基 / 羧基 / 羟基 / 氟碳链 / 金属位点 / 孔穴 / 疏水域 / π 结构 |
+| `pore_structure` | 微孔 / 介孔 / 大孔 / 孔径 / 孔容 / 孔径分布 |
+| `specific_surface_area` | BET 比表面积 |
+| `morphology` | 粉末 / 颗粒 / 树脂 / 凝胶 / 干凝胶 / 磁性颗粒 / 柱填料等 |
+| `zeta_potential` | zeta 电位；若无则记录 pHpzc 或表面电荷推断并注明 |
+| `target_pollutant` | 污染物名称 + CAS |
+| `adsorption_performance.capacity_mg_g` | qmax / qe / 穿透容量 / 估算容量 |
+| `adsorption_performance.removal_rate` | 平衡去除率 / 低浓度去除率 / 柱实验去除率 |
+| `adsorption_performance.kinetics` | 平衡时间 / 速率常数 / t90 / 动力学模型 |
+| `design_rationale` | 机理、水质适配性、稳定性、合成可行性、再生性、环保/经济风险的压缩说明 |
+| `literature_support` | 支撑该方案的文献证据、页码、图表、关键结论 |
+| `do_not_compliance` | 是否违反水质约束或设计禁忌（高盐失效 / pH 不稳 / 二次污染等） |
+
+**C. 需提取但不单列为 visible 字段的支撑证据**
+
+下列信息不作为 `merged_proposals` 的一级字段直接暴露，必须压缩写入 `design_rationale` / `literature_support` / `do_not_compliance`：
+
+- 合成：`synthesis_method` / `key_reagents` / `solvents` / `temperature` / `reaction_time` / `equipment` / `steps_count` / `scale_up_claim` / `commercial_availability` / `hazard_notes`
+- 稳定性：`water_stability` / `pH_stability` / `mechanical_strength` / `swelling` / `leaching` / `solid_liquid_separation` / `long_term_operation`
+- 再生性：`regeneration_method` / `regenerant` / `cycle_count` / `performance_retention` / `desorption_efficiency` / `secondary_waste_risk`
+- 经济/环保：`raw_material_source` / `renewable_or_biomass_source` / `commercial_material_basis` / `toxic_precursors` / `fluorinated_reagent_risk` / `metal_leaching_risk` / `LCA_or_carbon_footprint` / `end_of_life`
+- 抗菌：`antibacterial_tested` / `tested_microorganisms` / `inhibition_rate` / `biofilm_resistance` / `antimicrobial_durability`
+
+**未报告抗菌不等同于抗菌性差**，应写 `not_reported`，是否扣分由下游动态权重决定。
+
+### 11.4 领域启发（供 Stage 2 Prompt 注入）
+
+以下启发用于帮助模型在 `design_rationale` 与 `do_not_compliance` 中给出合理判断，**不得直接写入 `evaluation_weights`**（权重生成由下游脚本负责）：
+
+- **短链 PFAS / 痕量浓度 / 共存阴离子**：选择性与抗竞争能力重要性上升
+- **高盐 / 高硬度 / 真实水样**：水稳定性、结构稳定性、再生性权重上升
+- **高微生物活性 / 长期运行场景**：抗菌 / 抗生物污染维度重要性上升
+- **含氟试剂 / 重金属浸出风险**：`do_not_compliance` 应显式标注
+- **综述表格或引用数据**：禁止误判为本文实验，应标记 `record_origin = literature_comparison`
+
+### 11.5 隐藏标签设计（`hidden_oracle_label`）
+
+每条记录必须保留隐藏标签，**严禁并入 `visible_input`**：
+
+| 字段 | 说明 |
+|------|------|
+| `quality_tier` | `high` / `low` / `noise` |
+| `quality_reason` | 判定依据的一句话说明 |
+| `expected_rank_group` | 预期排序分组（如 top / middle / bottom） |
+| `noise_type` | 仅 noise 类需填：`unit_mismatch` / `mechanism_mismatch` / `capacity_implausible` / `water_condition_fake` / `regeneration_contradiction` 等 |
+| `corruption_fields` | 被人工污染的字段名列表 |
+
+**等级判定参考**：
+- `high`：材料与污染物机制匹配、性能强、水质条件明确、有稳定性/再生性证据
+- `low`：真实文献中的低效对照 / 未改性 / 商业基准 / 缺关键稳定性证据
+- `noise`：人工构造的错配 / 矛盾样本（单位错置、机制错配、容量明显不合理等）
+
+**下游评价指标建议**（不在本 Skill 执行，仅提示）：优先使用排序类指标——pairwise ranking accuracy / Spearman correlation / NDCG@k / top-k high-quality hit rate，而非绝对分数阈值。
+
+### 11.6 Profile 专用输出 Schema
+
+本 Profile 激活时，**覆盖** §5.1 标准 JSON 输出结构，改用如下三段式。`extraction_meta` 与 `validation_report` 保留（来自通用流水线），`data` 替换为 `records`：
+
+```json
+{
+  "extraction_meta": { "...同 §5.1，锚点由 Stage 0 硬提取": "" },
+  "paper_id": "{paper_id}",
+  "records": [
+    {
+      "case_id": null,
+      "visible_input": {
+        "constraint_context": {
+          "water_quality_and_pollutant": {
+            "water_quality_profile": {
+              "water_source_type": null,
+              "ph_range": null,
+              "temperature_range": null,
+              "salinity_level": null,
+              "typical_ion_composition": {},
+              "organic_load": null,
+              "microbial_activity": null,
+              "special_characteristics": []
+            },
+            "pollutant_characteristics": [
+              {
+                "name": null,
+                "cas_number": null,
+                "typical_concentration": null,
+                "pka_value": null,
+                "dissociation_analysis": null,
+                "charge_state": null,
+                "molecular_size": null,
+                "hydrophobicity": null,
+                "special_properties": []
+              }
+            ]
+          },
+          "evaluation_weights": {
+            "adsorption_performance": null,
+            "structural_stability": null,
+            "synthesis_feasibility": null,
+            "economic_viability": null,
+            "environmental_impact": null,
+            "antimicrobial_property": null,
+            "regenerability": null,
+            "weight_adjustment_rationale": null
+          },
+          "design_guidelines": {
+            "mandatory_requirements": [],
+            "do_not_list": [],
+            "recommended_approaches": [],
+            "cautionary_notes": []
+          }
+        },
+        "merged_proposals": [
+          {
+            "proposal_id": 1,
+            "material_type": null,
+            "chemical_formula": null,
+            "element_composition": {},
+            "active_sites": [],
+            "pore_structure": {},
+            "specific_surface_area": null,
+            "morphology": null,
+            "zeta_potential": null,
+            "target_pollutant": null,
+            "adsorption_performance": {
+              "capacity_mg_g": null,
+              "removal_rate": null,
+              "kinetics": null
+            },
+            "design_rationale": null,
+            "literature_support": [],
+            "do_not_compliance": null
+          }
+        ]
+      },
+      "hidden_oracle_label": {
+        "quality_tier": null,
+        "quality_reason": null,
+        "expected_rank_group": null,
+        "noise_type": null,
+        "corruption_fields": []
+      },
+      "source_trace": {
+        "paper_title": null,
+        "record_origin": "this_work | control | literature_comparison | synthetic_noise",
+        "source_pages": [],
+        "source_tables_or_figures": [],
+        "evidence_text": [],
+        "extraction_warnings": []
+      }
+    }
+  ],
+  "validation_report": { "...同 §5.1": "" }
+}
+```
+
+### 11.7 Profile 与通用流水线的衔接
+
+| 流水线阶段 | 本 Profile 的影响 |
+|-----------|-------------------|
+| Stage 0 文本锚定 | 不变，锚点（title/doi/authors/keywords）仍强制注入 |
+| Stage 1 视觉精读 | 不变，data_page 仍由 Qwen3.6-plus 多模态处理 |
+| Stage 2 合并提参 | **替换** `output_schema` 为 §11.6；将 §11.2–11.4 作为用户约束与领域启发注入 Prompt |
+| Stage 3 三级硬校验 | 不变；对 `records[*].visible_input.merged_proposals[*].chemical_formula` 与 `target_pollutant` 执行实体存在性校验；对 `adsorption_performance.capacity_mg_g` 与 `removal_rate` 执行数值回溯校验 |
+
+**校验失败处理**：
+- Level 2 实体校验失败的 record 必须删除，并在 `extraction_meta.extraction_notes` 中记录
+- Level 3 数值回溯失败但来自 `data_page` 的 → 保留，在 `source_trace.extraction_warnings` 中标注 `needs_review`
+- `record_origin = literature_comparison` 的记录豁免 Level 3 数值回溯（数据本不在本文实验中）
+
+### 11.8 典型触发示例
+
+**用户输入示例**：
+> 我要为 ADRMATS 评估智能体构建测试集，请从 `~/papers/` 的 PDF 中按 `high/low/noise` 三级提取，输出 `visible_input` + `hidden_oracle_label`。噪声样本占 10%，低质量占 20%，高质量占 70%。
+
+**Agent 执行**：
+1. 激活本 Profile（检测到 `visible_input` / `hidden_oracle_label` 关键词）
+2. 对每篇 PDF 执行 Stage 0–3 通用流水线
+3. Stage 2 使用 §11.6 的 Profile Schema，按 §11.2 规则拆分 records，按 §11.4 启发生成 `design_rationale` / `do_not_compliance`
+4. Stage 3 按 §11.7 衔接规则执行校验
+5. 合并所有 PDF 的 records 为最终测试集 JSON，由用户后续脚本挂接动态权重生成与质量标签采样
 
